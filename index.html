@@ -17,75 +17,100 @@
       justify-content: center;
       min-height: 100vh;
       gap: 24px;
-      padding: 24px;
+      padding: 16px;
     }
 
     h1 {
-      font-size: 2rem;
+      font-size: clamp(1.2rem, 5vw, 2rem);
       font-weight: 700;
       letter-spacing: 0.08em;
       color: #a8d8ea;
       text-transform: uppercase;
+      user-select: none;
     }
 
     #header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      width: 360px;
+      width: min(360px, calc(100vw - 32px));
       background: #16213e;
       border: 1px solid #0f3460;
       border-radius: 10px;
-      padding: 10px 18px;
+      padding: 8px 12px;
+      gap: 8px;
+      user-select: none;
     }
 
     #mine-counter {
-      font-size: 1.5rem;
+      font-size: clamp(1rem, 4vw, 1.5rem);
       font-weight: 700;
       color: #e94560;
-      min-width: 48px;
+      min-width: 42px;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 4px;
     }
 
     #status-emoji {
-      font-size: 1.8rem;
+      font-size: clamp(1.2rem, 4vw, 1.8rem);
       cursor: default;
       user-select: none;
     }
 
+    #flag-mode-btn {
+      background: #1e3a5f;
+      color: #a8d8ea;
+      border: 1px solid #2a5298;
+      border-radius: 6px;
+      padding: 5px 8px;
+      font-size: clamp(0.65rem, 2.5vw, 0.8rem);
+      font-weight: 600;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+      white-space: nowrap;
+    }
+    #flag-mode-btn.active {
+      background: #e94560;
+      border-color: #ff6b6b;
+      color: #fff;
+    }
+
     #timer {
-      font-size: 1.5rem;
+      font-size: clamp(1rem, 4vw, 1.5rem);
       font-weight: 700;
       color: #a8d8ea;
-      min-width: 48px;
+      min-width: 42px;
       text-align: right;
     }
 
     #board {
       display: grid;
-      grid-template-columns: repeat(8, 44px);
-      grid-template-rows: repeat(8, 44px);
+      grid-template-columns: repeat(8, var(--cell-size));
+      grid-template-rows: repeat(8, var(--cell-size));
       gap: 3px;
       background: #0f3460;
       border: 2px solid #0f3460;
       border-radius: 8px;
       padding: 6px;
       user-select: none;
+      touch-action: none;
     }
 
     .cell {
-      width: 44px;
-      height: 44px;
+      width: var(--cell-size);
+      height: var(--cell-size);
       border-radius: 5px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1rem;
+      font-size: calc(var(--cell-size) * 0.45);
       font-weight: 800;
       cursor: pointer;
       transition: background 0.1s, transform 0.07s;
+      user-select: none;
+      -webkit-user-select: none;
     }
 
     .cell.hidden {
@@ -143,16 +168,18 @@
       font-weight: 600;
       letter-spacing: 0.06em;
       cursor: pointer;
+      user-select: none;
       transition: background 0.15s, transform 0.1s;
     }
     #new-game-btn:hover  { background: #1a5276; transform: scale(1.04); }
     #new-game-btn:active { transform: scale(0.97); }
 
     #message {
-      font-size: 1.1rem;
+      font-size: clamp(0.9rem, 3vw, 1.1rem);
       font-weight: 600;
       height: 1.5rem;
       letter-spacing: 0.04em;
+      user-select: none;
     }
     #message.win  { color: #81c784; }
     #message.loss { color: #e94560; }
@@ -167,6 +194,7 @@
       <span>💣</span><span id="mine-count">10</span>
     </div>
     <div id="status-emoji">🙂</div>
+    <button id="flag-mode-btn">🚩 Flag Mode</button>
     <div id="timer">0s</div>
   </div>
 
@@ -180,6 +208,15 @@
   const ROWS        = 8;
   const COLS        = 8;
   const TOTAL_MINES = 10;
+  const LONG_PRESS_MS = 300;
+
+  // ── Dynamic cell size ───────────────────────────────────────────────────────
+  function setCellSize() {
+    const size = Math.max(36, Math.floor((Math.min(window.innerWidth, 480) - 32) / 8));
+    document.documentElement.style.setProperty('--cell-size', size + 'px');
+  }
+  setCellSize();
+  window.addEventListener('resize', setCellSize);
 
   // ── State ──────────────────────────────────────────────────────────────────
   let board         = [];
@@ -189,6 +226,7 @@
   let flagsPlaced   = 0;
   let timerInterval = null;
   let seconds       = 0;
+  let flagMode      = false;
 
   // ── DOM refs ───────────────────────────────────────────────────────────────
   const boardEl       = document.getElementById('board');
@@ -197,6 +235,14 @@
   const timerEl       = document.getElementById('timer');
   const messageEl     = document.getElementById('message');
   const newGameBtn    = document.getElementById('new-game-btn');
+  const flagModeBtn   = document.getElementById('flag-mode-btn');
+
+  // ── Flag mode toggle ───────────────────────────────────────────────────────
+  flagModeBtn.addEventListener('click', () => {
+    flagMode = !flagMode;
+    flagModeBtn.classList.toggle('active', flagMode);
+    flagModeBtn.textContent = flagMode ? '🚩 Flag: ON' : '🚩 Flag Mode';
+  });
 
   // ── Board creation ─────────────────────────────────────────────────────────
   function createEmptyBoard() {
@@ -308,9 +354,21 @@
     if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
   }
 
+  // ── Flag a cell ────────────────────────────────────────────────────────────
+  function toggleFlag(r, c) {
+    if (gameOver) return;
+    const cell = board[r][c];
+    if (cell.isRevealed) return;
+    cell.isFlagged = !cell.isFlagged;
+    flagsPlaced   += cell.isFlagged ? 1 : -1;
+    mineCountEl.textContent = Math.max(0, TOTAL_MINES - flagsPlaced);
+    render();
+  }
+
   // ── Click handlers ─────────────────────────────────────────────────────────
   function handleLeftClick(r, c) {
     if (gameOver) return;
+    if (flagMode) { toggleFlag(r, c); return; }
     const cell = board[r][c];
     if (cell.isRevealed || cell.isFlagged) return;
     if (firstClick) { firstClick = false; placeMines(r, c); startTimer(); }
@@ -321,20 +379,13 @@
 
   function handleRightClick(evt, r, c) {
     evt.preventDefault();
-    if (gameOver) return;
-    const cell = board[r][c];
-    if (cell.isRevealed) return;
-    cell.isFlagged = !cell.isFlagged;
-    flagsPlaced   += cell.isFlagged ? 1 : -1;
-    mineCountEl.textContent = Math.max(0, TOTAL_MINES - flagsPlaced);
-    render();
+    toggleFlag(r, c);
   }
 
   // ── Render — safe DOM construction (no innerHTML) ──────────────────────────
   const NUM_CLASS = ['', 'n1', 'n2', 'n3', 'n4', 'n5', 'n6', 'n7', 'n8'];
 
   function render() {
-    // Remove existing cell nodes
     while (boardEl.firstChild) boardEl.removeChild(boardEl.firstChild);
 
     for (let r = 0; r < ROWS; r++) {
@@ -367,7 +418,30 @@
         }
 
         if (!gameOver) {
-          el.addEventListener('click',       ()    => handleLeftClick(r, c));
+          // Long-press for flagging (touch devices)
+          let longPressTimer = null;
+          let longPressFired = false;
+
+          el.addEventListener('touchstart', (evt) => {
+            longPressFired = false;
+            longPressTimer = setTimeout(() => {
+              longPressFired = true;
+              toggleFlag(r, c);
+            }, LONG_PRESS_MS);
+          }, { passive: true });
+
+          el.addEventListener('touchend', (evt) => {
+            clearTimeout(longPressTimer);
+            if (longPressFired) {
+              evt.preventDefault(); // block the synthetic click
+            }
+          });
+
+          el.addEventListener('touchmove', () => {
+            clearTimeout(longPressTimer);
+          }, { passive: true });
+
+          el.addEventListener('click',       ()    => { if (!longPressFired) handleLeftClick(r, c); });
           el.addEventListener('contextmenu', (evt) => handleRightClick(evt, r, c));
         }
 
@@ -385,11 +459,14 @@
     firstClick  = true;
     flagsPlaced = 0;
     seconds     = 0;
-    mineCountEl.textContent   = String(TOTAL_MINES);
-    statusEmojiEl.textContent = '🙂';
-    timerEl.textContent       = '0s';
-    messageEl.textContent     = '';
-    messageEl.className       = '';
+    flagMode    = false;
+    flagModeBtn.classList.remove('active');
+    flagModeBtn.textContent       = '🚩 Flag Mode';
+    mineCountEl.textContent       = String(TOTAL_MINES);
+    statusEmojiEl.textContent     = '🙂';
+    timerEl.textContent           = '0s';
+    messageEl.textContent         = '';
+    messageEl.className           = '';
     render();
   }
 
