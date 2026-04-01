@@ -8,24 +8,23 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      background: #1a1a2e;
-      color: #e0e0e0;
-      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #F5F5F7;
+      color: #1D1D1F;
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       min-height: 100vh;
-      gap: 24px;
+      gap: 20px;
       padding: 16px;
     }
 
     h1 {
-      font-size: clamp(1.2rem, 5vw, 2rem);
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      color: #a8d8ea;
-      text-transform: uppercase;
+      font-size: clamp(1.1rem, 4vw, 1.5rem);
+      font-weight: 600;
+      letter-spacing: -0.3px;
+      color: #1D1D1F;
       user-select: none;
     }
 
@@ -33,56 +32,81 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      width: min(360px, calc(100vw - 32px));
-      background: #16213e;
-      border: 1px solid #0f3460;
-      border-radius: 10px;
-      padding: 8px 12px;
+      width: min(380px, calc(100vw - 32px));
+      background: #FFFFFF;
+      border-radius: 12px;
+      padding: 10px 14px;
       gap: 8px;
       user-select: none;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.06);
     }
 
     #mine-counter {
-      font-size: clamp(1rem, 4vw, 1.5rem);
-      font-weight: 700;
-      color: #e94560;
-      min-width: 42px;
+      font-size: clamp(0.95rem, 3.5vw, 1.15rem);
+      font-weight: 600;
+      color: #FF3B30;
+      min-width: 48px;
       display: flex;
       align-items: center;
-      gap: 4px;
+      gap: 5px;
+      letter-spacing: -0.3px;
+    }
+
+    #mine-counter .mine-label {
+      font-size: 10px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #6E6E73;
+      display: block;
     }
 
     #status-emoji {
-      font-size: clamp(1.2rem, 4vw, 1.8rem);
+      font-size: clamp(0.75rem, 2.5vw, 0.85rem);
+      font-weight: 500;
       cursor: default;
       user-select: none;
+      color: #6E6E73;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      min-width: 64px;
+      text-align: center;
     }
 
     #flag-mode-btn {
-      background: #1e3a5f;
-      color: #a8d8ea;
-      border: 1px solid #2a5298;
-      border-radius: 6px;
-      padding: 5px 8px;
-      font-size: clamp(0.65rem, 2.5vw, 0.8rem);
-      font-weight: 600;
+      background: #F5F5F7;
+      color: #1D1D1F;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-size: 13px;
+      font-weight: 500;
+      font-family: inherit;
       cursor: pointer;
       user-select: none;
-      transition: background 0.15s, border-color 0.15s, color 0.15s;
+      transition: background 0.15s ease, color 0.15s ease;
       white-space: nowrap;
+      letter-spacing: -0.1px;
     }
     #flag-mode-btn.active {
-      background: #e94560;
-      border-color: #ff6b6b;
-      color: #fff;
+      background: #0071E3;
+      color: #FFFFFF;
     }
 
     #timer {
-      font-size: clamp(1rem, 4vw, 1.5rem);
-      font-weight: 700;
-      color: #a8d8ea;
-      min-width: 42px;
+      font-size: clamp(0.95rem, 3.5vw, 1.15rem);
+      font-weight: 600;
+      color: #1D1D1F;
+      min-width: 40px;
       text-align: right;
+      letter-spacing: -0.3px;
+    }
+
+    #board-wrap {
+      background: #FFFFFF;
+      border-radius: 16px;
+      padding: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.06);
     }
 
     #board {
@@ -90,10 +114,6 @@
       grid-template-columns: repeat(8, var(--cell-size));
       grid-template-rows: repeat(8, var(--cell-size));
       gap: 3px;
-      background: #0f3460;
-      border: 2px solid #0f3460;
-      border-radius: 8px;
-      padding: 6px;
       user-select: none;
       touch-action: none;
     }
@@ -101,88 +121,97 @@
     .cell {
       width: var(--cell-size);
       height: var(--cell-size);
-      border-radius: 5px;
+      border-radius: 6px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: calc(var(--cell-size) * 0.45);
-      font-weight: 800;
+      font-size: calc(var(--cell-size) * 0.42);
+      font-weight: 700;
       cursor: pointer;
-      transition: background 0.1s, transform 0.07s;
+      transition: background 0.15s ease;
       user-select: none;
       -webkit-user-select: none;
+      font-family: inherit;
+      letter-spacing: -0.3px;
     }
 
     .cell.hidden {
-      background: #1e3a5f;
-      border: 1px solid #2a5298;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -1px 0 rgba(0,0,0,0.3);
+      background: #F5F5F7;
+      border: 1px solid #E5E5EA;
     }
     .cell.hidden:hover {
-      background: #24497a;
-      transform: scale(1.06);
+      background: #EBEBEB;
     }
 
     .cell.flagged {
-      background: #1e3a5f;
-      border: 1px solid #e94560;
+      background: #FFF3E0;
+      border: 1px solid #E5E5EA;
+      color: #FF9500;
     }
 
     .cell.revealed {
-      background: #0d1b2a;
-      border: 1px solid #0d1b2a;
+      background: #FFFFFF;
+      border: none;
       cursor: default;
     }
 
     .cell.mine-hit {
-      background: #e94560;
-      border: 1px solid #ff6b6b;
+      background: #FFE5E5;
+      border: none;
+      color: #FF3B30;
     }
 
     .cell.mine-shown {
-      background: #3d1a1a;
-      border: 1px solid #7a2020;
+      background: #FFE5E5;
+      border: none;
+      color: #FF3B30;
     }
 
     .cell.wrong-flag {
-      background: #3d1a1a;
-      border: 1px solid #e94560;
+      background: #FFE5E5;
+      border: none;
+      color: #FF3B30;
     }
 
-    .n1 { color: #4fc3f7; }
-    .n2 { color: #81c784; }
-    .n3 { color: #e57373; }
-    .n4 { color: #7e57c2; }
-    .n5 { color: #ff7043; }
-    .n6 { color: #26c6da; }
-    .n7 { color: #ec407a; }
-    .n8 { color: #bdbdbd; }
+    .n1 { color: #0071E3; }
+    .n2 { color: #34C759; }
+    .n3 { color: #FF3B30; }
+    .n4 { color: #5856D6; }
+    .n5 { color: #FF9500; }
+    .n6 { color: #00C7BE; }
+    .n7 { color: #1D1D1F; }
+    .n8 { color: #6E6E73; }
 
     #new-game-btn {
-      background: #0f3460;
-      color: #a8d8ea;
-      border: 1px solid #1a6b9a;
+      background: #0071E3;
+      color: #FFFFFF;
+      border: none;
       border-radius: 8px;
-      padding: 10px 28px;
-      font-size: 1rem;
-      font-weight: 600;
-      letter-spacing: 0.06em;
+      padding: 8px 16px;
+      font-size: 14px;
+      font-weight: 500;
+      font-family: inherit;
+      letter-spacing: -0.1px;
       cursor: pointer;
       user-select: none;
-      transition: background 0.15s, transform 0.1s;
+      transition: background 0.15s ease;
     }
-    #new-game-btn:hover  { background: #1a5276; transform: scale(1.04); }
-    #new-game-btn:active { transform: scale(0.97); }
+    #new-game-btn:hover  { background: #0077ED; }
+    #new-game-btn:active { background: #006ACC; }
 
     #message {
-      font-size: clamp(0.9rem, 3vw, 1.1rem);
-      font-weight: 600;
-      height: 1.5rem;
-      letter-spacing: 0.04em;
+      font-size: clamp(0.8rem, 2.8vw, 0.95rem);
+      font-weight: 500;
+      height: 1.4rem;
+      letter-spacing: -0.1px;
       user-select: none;
+      color: #6E6E73;
+      text-transform: uppercase;
+      font-size: 11px;
+      letter-spacing: 0.06em;
     }
-    #message.win  { color: #81c784; }
-    #message.loss { color: #e94560; }
+    #message.win  { color: #34C759; }
+    #message.loss { color: #FF3B30; }
   </style>
 </head>
 <body>
@@ -191,14 +220,16 @@
 
   <div id="header">
     <div id="mine-counter">
-      <span>💣</span><span id="mine-count">10</span>
+      <span>&#9679;</span><span id="mine-count">10</span>
     </div>
-    <div id="status-emoji">🙂</div>
-    <button id="flag-mode-btn">🚩 Flag Mode</button>
+    <div id="status-emoji">Ready</div>
+    <button id="flag-mode-btn">&#9873; Flag Mode</button>
     <div id="timer">0s</div>
   </div>
 
-  <div id="board"></div>
+  <div id="board-wrap">
+    <div id="board"></div>
+  </div>
 
   <div id="message"></div>
 
@@ -241,7 +272,7 @@
   flagModeBtn.addEventListener('click', () => {
     flagMode = !flagMode;
     flagModeBtn.classList.toggle('active', flagMode);
-    flagModeBtn.textContent = flagMode ? '🚩 Flag: ON' : '🚩 Flag Mode';
+    flagModeBtn.textContent = flagMode ? '\u2691 Flag: ON' : '\u2691 Flag Mode';
   });
 
   // ── Board creation ─────────────────────────────────────────────────────────
@@ -327,8 +358,8 @@
     for (let r = 0; r < ROWS; r++)
       for (let c = 0; c < COLS; c++)
         if (board[r][c].isMine && !board[r][c].isFlagged) board[r][c].isRevealed = true;
-    statusEmojiEl.textContent = '💀';
-    messageEl.textContent     = 'BOOM! Game over.';
+    statusEmojiEl.textContent = 'Game over';
+    messageEl.textContent     = 'Game over';
     messageEl.className       = 'loss';
     render();
   }
@@ -337,8 +368,8 @@
     won = true;
     gameOver = true;
     stopTimer();
-    statusEmojiEl.textContent = '🏆';
-    messageEl.textContent     = 'You cleared the field!';
+    statusEmojiEl.textContent = 'You won';
+    messageEl.textContent     = 'You won';
     messageEl.className       = 'win';
     render();
   }
@@ -397,7 +428,7 @@
         if (cell.isRevealed) {
           if (cell.isMine) {
             el.classList.add(cell.wasHit ? 'mine-hit' : 'mine-shown');
-            el.textContent = '💣';
+            el.textContent = '\u25CF';
           } else {
             el.classList.add('revealed');
             if (cell.count > 0) {
@@ -408,10 +439,10 @@
         } else if (cell.isFlagged) {
           if (gameOver && !cell.isMine) {
             el.classList.add('wrong-flag');
-            el.textContent = '❌';
+            el.textContent = '\u2715';
           } else {
             el.classList.add('flagged');
-            el.textContent = '🚩';
+            el.textContent = '\u2691';
           }
         } else {
           el.classList.add('hidden');
@@ -461,9 +492,9 @@
     seconds     = 0;
     flagMode    = false;
     flagModeBtn.classList.remove('active');
-    flagModeBtn.textContent       = '🚩 Flag Mode';
+    flagModeBtn.textContent       = '\u2691 Flag Mode';
     mineCountEl.textContent       = String(TOTAL_MINES);
-    statusEmojiEl.textContent     = '🙂';
+    statusEmojiEl.textContent     = 'Ready';
     timerEl.textContent           = '0s';
     messageEl.textContent         = '';
     messageEl.className           = '';
